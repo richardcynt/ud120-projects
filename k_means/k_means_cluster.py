@@ -1,5 +1,5 @@
 #!/usr/bin/python 
-
+#coding: utf-8
 """ 
     Skeleton code for k-means clustering mini-project.
 """
@@ -22,7 +22,7 @@ def Draw(pred, features, poi, mark_poi=False, name="image.png", f1_name="feature
 
     ### plot each cluster with a different color--add more colors for
     ### drawing more than five clusters
-    colors = ["b", "c", "k", "m", "g"]
+    colors = ["b", "r", "k", "m", "g"]
     for ii, pp in enumerate(pred):
         plt.scatter(features[ii][0], features[ii][1], color = colors[pred[ii]])
 
@@ -48,24 +48,41 @@ data_dict.pop("TOTAL", 0)
 ### can be any key in the person-level dictionary (salary, director_fees, etc.) 
 feature_1 = "salary"
 feature_2 = "exercised_stock_options"
+feature_3 = 'total_payments'
 poi  = "poi"
-features_list = [poi, feature_1, feature_2]
+features_list = [poi, feature_1, feature_2, feature_3]
 data = featureFormat(data_dict, features_list )
 poi, finance_features = targetFeatureSplit( data )
 
+print '---------- exercised_stock_options 的最大、最小值（忽略NaN） ----------'
+sort_data = sorted(data, key = lambda x:x[2])
+for x in sort_data:
+    if x[2] != 0:
+        print 'exercised_stock_options 最小值为：', x[2]
+        break
+print 'exercised_stock_options 最大值为：', sort_data[len(sort_data)-1][2]
+
+print '---------- salary 的最大、最小值（忽略NaN） ----------'
+sort_data = sorted(data, key = lambda x:x[1])
+for x in sort_data:
+    if x[1] != 0:
+        print 'salary 最小值为：', x[1]
+        break
+print 'salary 最大值为：', sort_data[len(sort_data)-1][1]
 
 ### in the "clustering with 3 features" part of the mini-project,
 ### you'll want to change this line to 
 ### for f1, f2, _ in finance_features:
 ### (as it's currently written, the line below assumes 2 features)
-for f1, f2 in finance_features:
+for f1, f2, _ in finance_features:
     plt.scatter( f1, f2 )
 plt.show()
 
 ### cluster here; create predictions of the cluster labels
 ### for the data and store them to a list called pred
-
-
+from sklearn.cluster import KMeans
+kmeans = KMeans(n_clusters = 2).fit(finance_features)
+pred = kmeans.predict(finance_features)
 
 
 ### rename the "name" parameter when you change the number of features
